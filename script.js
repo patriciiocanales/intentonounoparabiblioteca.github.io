@@ -1,4 +1,3 @@
-// script.js
 document.addEventListener('DOMContentLoaded', () => {
     const content = document.getElementById('content');
     const readingListBtn = document.getElementById('readingListBtn');
@@ -129,20 +128,36 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('generateRecommendationsBtn').addEventListener('click', generateRecommendations);
     }
 
-    function generateRecommendations() {
-        // Aquí deberías implementar la lógica para cargar recomendaciones desde Google Sheets
+    async function generateRecommendations() {
         const recommendationsList = document.getElementById('recommendationsList');
         recommendationsList.innerHTML = 'Cargando recomendaciones...';
-        // Simulación de recomendaciones
-        setTimeout(() => {
-            recommendationsList.innerHTML = `
-                <div class="bg-gray-800 p-4 mb-2">
-                    <h3>Título: Ejemplo de Libro</h3>
-                    <p>Autor: Autor Ejemplo</p>
-                    <p>Descripción: Una breve descripción del libro.</p>
+        
+        try {
+            const res = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhu8rPgtpK7NF8j8O8Aq57IpFqaQtsaPE1r6uHKwM5EOkogdTu8cmwpmtz7IpSEPwqOBVVoPQThftN1DTlwk9aEwv820nFn5gjFxjzWVsjDVL5BEwC6MVr90tg4Xj5czoJTZhsrmxEkGoeHpX6hreflNidn9d9O1n3TykVb1VC2cEOCt3A-N_rhyB98UD2OY3jguUgdUAaSs7MjxVeZPKssj1tbNXh60gkYnoJUgeBLjjL4fFM6vz73J_dNkpB87i3X3O4ZPWlB_k1ingmvkYotzU0ht5HC8nZJGWXQ&lib=MvaPRDADU8LK6ygpMRVaYh5T3yILNd82e?sheet=Hoja 1');
+            if (!res.ok) throw new Error("Error al cargar recomendaciones");
+            const data = await res.json();
+            
+            recommendationsList.innerHTML = ''; // Limpiar la lista antes de mostrar nuevas recomendaciones
+
+            // Filtrar 4 recomendaciones aleatorias
+            const randomRecommendations = data.sort(() => 0.5 - Math.random()).slice(0, 4);
+
+            randomRecommendations.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-800 p-4 mb-2 text-white'; // Asegúrate de que el texto sea visible
+                div.innerHTML = `
+                    <h3 class="font-bold">Título: ${rec.Título}</h3>
+                    <p>Autor: ${rec.Autor}</p>
+                    <p>Descripción: ${rec.Descripción}</p>
+                    <p>Información del Autor: ${rec.AutorInfo}</p>
+                    <p>Premios: ${rec.Premios}</p>
                     <button class="bg-blue-500 p-2 text-white">Añadir a la Lista de Lectura</button>
-                </div>
-            `;
-        }, 1000);
+                `;
+                recommendationsList.appendChild(div);
+            });
+        } catch (err) {
+            recommendationsList.innerHTML = 'Error al cargar recomendaciones.';
+            console.error(err);
+        }
     }
 });
