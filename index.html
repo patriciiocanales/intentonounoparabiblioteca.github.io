@@ -58,68 +58,6 @@
         </main>
     </div>
 
-    <script>
-        const API_URL = 'AKfycbzKlgYZfZ4iFt2052Cf6DvnN-N19CQjnLkUWyVjegJtrcadB2yCiFmg5uZLLKcQigeoJQ'; // Reemplaza con la URL de tu Web App
-
-        // Obtener libros leídos
-        async function fetchBooksRead() {
-            const res = await fetch(`${API_URL}?action=getReadBooks`);
-            const data = await res.json();
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                // Aquí puedes manejar la visualización de los libros leídos
-                console.log(data);
-            }
-        }
-
-        // Obtener recomendaciones
-        async function fetchRecommendations() {
-            const res = await fetch(`${API_URL}?action=getRecommendations`);
-            const data = await res.json();
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                // Aquí puedes manejar la visualización de las recomendaciones
-                console.log(data);
-            }
-        }
-
-        // Agregar un libro leído
-        async function addBookRead(book) {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(book),
-                headers: {'Content-Type': 'application/json'}
-            });
-            const data = await res.json();
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                console.log('Libro agregado con éxito');
-            }
-        }
-
-        // Ejemplo de uso
-        document.getElementById('syncGoogleSheetsBtn').addEventListener('click', function() {
-            fetchBooksRead(); // Llama a la función para obtener libros leídos
-            fetchRecommendations(); // Llama a la función para obtener recomendaciones
-        });
-
-        // Cambiar entre gradientes
-        document.getElementById('gradient1Btn').addEventListener('click', function() {
-            document.querySelector('.min-h-screen').classList.remove('gradient-2');
-            document.querySelector('.min-h-screen').classList.add('gradient-1');
-            this.classList.add('border-2', 'border-white');
-            document.getElementById('gradient2Btn').classList.remove('border-2', 'border-white');
-        });
-        
-        document.getElementById('gradient2Btn').addEventListener('click', function() {
-            document.querySelector('.min-h-screen').classList.remove('gradient-1');
-            document.querySelector('.min-h-screen').classList.add('gradient-2');
-            this.classList.add('border-2', 'border-white');
-            document.getElementById('gradient1Btn').classList.remove('border-2', 'border-white');
-        });
-    </script>
+    <script src="script.js"></script> <!-- Asegúrate de que el script.js esté correctamente vinculado -->
 </body>
 </html>
