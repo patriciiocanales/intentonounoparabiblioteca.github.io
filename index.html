@@ -6,20 +6,120 @@
     <title>Biblioteca Personal</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .gradient-1 {
+            background: -webkit-linear-gradient(90deg, #9709fe, #b730ec, #d252c2, #f57080, #f18980);
+            background: linear-gradient(90deg, #9709fe, #b730ec, #d252c2, #f57080, #f18980);
+        }
+        
+        .gradient-2 {
+            background: -webkit-linear-gradient(90deg, #3063dc, #327acd, #4cb0c8, #00a88c, #35d6b0);
+            background: linear-gradient(90deg, #3063dc, #327acd, #4cb0c8, #00a88c, #35d6b0);
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white">
-    <div class="flex">
-        <aside class="w-1/4 bg-gray-800 p-4">
-            <h1 class="text-2xl font-bold mb-4">Biblioteca Personal</h1>
-            <button id="readingListBtn" class="w-full text-left p-2 hover:bg-gray-700">Lista de Lectura</button>
-            <button id="reviewsBtn" class="w-full text-left p-2 hover:bg-gray-700">Reseñas</button>
-            <button id="recommendationsBtn" class="w-full text-left p-2 hover:bg-gray-700">Recomendaciones</button>
+<body class="text-white font-poppins">
+    <div class="gradient-1 min-h-screen flex">
+        <aside class="w-1/4 bg-gray-800 text-white p-6 shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 font-merriweather">Mi Biblioteca Personal</h1>
+            <nav class="space-y-2">
+                <button id="booksBtn" class="w-full text-left p-3 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-book mr-3"></i> Todos los Libros
+                </button>
+                <button id="readingListBtn" class="w-full text-left p-3 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-bookmark mr-3"></i> Lista de Lectura
+                </button>
+                <button id="reviewsBtn" class="w-full text-left p-3 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-star mr-3"></i> Reseñas
+                </button>
+                <button id="recommendationsBtn" class="w-full text-left p-3 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-lightbulb mr-3"></i> Recomendaciones
+                </button>
+            </nav>
+            <div class="mt-8 pt-4 border-t border-gray-600">
+                <div class="mb-4">
+                    <p class="mb-2">Seleccionar tema:</p>
+                    <div class="flex space-x-2">
+                        <button id="gradient1Btn" class="gradient-1 w-8 h-8 rounded-full border-2 border-white"></button>
+                        <button id="gradient2Btn" class="gradient-2 w-8 h-8 rounded-full"></button>
+                    </div>
+                </div>
+                <button id="syncGoogleSheetsBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                    <i class="fas fa-sync-alt mr-2"></i> Sincronizar con Google Sheets
+                </button>
+            </div>
         </aside>
-        <main class="flex-1 p-4">
-            <div id="content"></div>
+        <main class="flex-1 p-6 bg-gray-800 bg-opacity-40 rounded-l-2xl shadow-xl">
+            <div id="content" class="container mx-auto"></div>
         </main>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        const API_URL = 'AKfycbzKlgYZfZ4iFt2052Cf6DvnN-N19CQjnLkUWyVjegJtrcadB2yCiFmg5uZLLKcQigeoJQ'; // Reemplaza con la URL de tu Web App
+
+        // Obtener libros leídos
+        async function fetchBooksRead() {
+            const res = await fetch(`${API_URL}?action=getReadBooks`);
+            const data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+            } else {
+                // Aquí puedes manejar la visualización de los libros leídos
+                console.log(data);
+            }
+        }
+
+        // Obtener recomendaciones
+        async function fetchRecommendations() {
+            const res = await fetch(`${API_URL}?action=getRecommendations`);
+            const data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+            } else {
+                // Aquí puedes manejar la visualización de las recomendaciones
+                console.log(data);
+            }
+        }
+
+        // Agregar un libro leído
+        async function addBookRead(book) {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(book),
+                headers: {'Content-Type': 'application/json'}
+            });
+            const data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+            } else {
+                console.log('Libro agregado con éxito');
+            }
+        }
+
+        // Ejemplo de uso
+        document.getElementById('syncGoogleSheetsBtn').addEventListener('click', function() {
+            fetchBooksRead(); // Llama a la función para obtener libros leídos
+            fetchRecommendations(); // Llama a la función para obtener recomendaciones
+        });
+
+        // Cambiar entre gradientes
+        document.getElementById('gradient1Btn').addEventListener('click', function() {
+            document.querySelector('.min-h-screen').classList.remove('gradient-2');
+            document.querySelector('.min-h-screen').classList.add('gradient-1');
+            this.classList.add('border-2', 'border-white');
+            document.getElementById('gradient2Btn').classList.remove('border-2', 'border-white');
+        });
+        
+        document.getElementById('gradient2Btn').addEventListener('click', function() {
+            document.querySelector('.min-h-screen').classList.remove('gradient-1');
+            document.querySelector('.min-h-screen').classList.add('gradient-2');
+            this.classList.add('border-2', 'border-white');
+            document.getElementById('gradient1Btn').classList.remove('border-2', 'border-white');
+        });
+    </script>
 </body>
 </html>
