@@ -3,10 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const readingListBtn = document.getElementById('readingListBtn');
     const reviewsBtn = document.getElementById('reviewsBtn');
     const recommendationsBtn = document.getElementById('recommendationsBtn');
+    const syncGoogleSheetsBtn = document.getElementById('syncGoogleSheetsBtn');
 
     readingListBtn.addEventListener('click', showReadingList);
     reviewsBtn.addEventListener('click', showReviews);
     recommendationsBtn.addEventListener('click', showRecommendations);
+    syncGoogleSheetsBtn.addEventListener('click', fetchBooksRead); // Agregar evento para sincronizar
 
     function showReadingList() {
         content.innerHTML = `
@@ -159,5 +161,41 @@ document.addEventListener('DOMContentLoaded', () => {
             recommendationsList.innerHTML = 'Error al cargar recomendaciones.';
             console.error(err);
         }
+    }
+
+    // 4. Función para obtener libros leídos desde Google Sheets
+    async function fetchBooksRead() {
+        const res = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLilBzOt89ZbG_3TQ_SYkyxy9b1-6XhGhgJIGgtgOnh-zgnfhVj1EE2gRU2Cg-bX8HMib3-Zgwy_8cdAzuOilqlMuX1A_ztTyx06DM3BboonjnsqnD1TFhsw2Ph53Xwh0RaeRkbtHfhZpf7ApuwZfOZ_sGetEs2bzjaJy5Wlqc6f37vtjsDNqwjW_rfQuljKW2kJmt1fyA1qHEq_MCz-7uIokbTJAtidF3IgHlSqSWt4suN7nKumRywvbPZU-DIIJjA-4uODZeqhTtYmYjOmlX0tLpVlfSW87D-ssMPzTpsfYZ5oed7E_lnOU5SgFQ&lib=MvaPRDADU8LK6ygpMRVaYh5T3yILNd82e?action=getReadBooks');
+        if (!res.ok) {
+            console.error('Error al obtener libros leídos:', res.statusText);
+            return;
+        }
+        const books = await res.json();
+        displayBooks(books);
+    }
+
+    // 5. Función para mostrar los libros leídos en la interfaz
+    function displayBooks(books) {
+        content.innerHTML = '<h2 class="text-xl font-bold mb-4">Libros Leídos</h2>';
+        const list = document.createElement('ul');
+        list.className = 'space-y-4';
+
+        if (books.length === 0) {
+            list.innerHTML = '<li>No hay libros leídos registrados.</li>';
+        } else {
+            books.forEach(book => {
+                const item = document.createElement('li');
+                item.className = 'bg-gray-700 p-4 rounded shadow';
+                item.innerHTML = `
+                    <h3 class="text-xl font-semibold">${book.Título || book.title || 'Sin título'}</h3>
+                    <p class="italic">Autor: ${book.Autor || book.author || 'Desconocido'}</p>
+                    ${book.Descripción || book.description ? `<p>${book.Descripción || book.description}</p>` : ''}
+                    ${book.Fecha || book.date ? `<p class="text-sm text-gray-400">Leído el: ${book.Fecha || book.date}</p>` : ''}
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        content.appendChild(list);
     }
 });
